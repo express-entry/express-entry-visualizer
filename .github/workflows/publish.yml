@@ -33,7 +33,7 @@ jobs:
                 git init -b main
                 git config user.name "GitAction"
                 git config user.email "git.action@example.com"
-                git remote add origin https://${{ secrets.PAT }}@github.com/LogicFan/logicfan.github.io.git
+                git remote add origin https://LogicFan:${{ secrets.GIT_PAT }}@github.com/express-entry/express-entry.github.io
                 git fetch origin
                 git add -A
                 git reset --soft origin/main
