@@ -1,6 +1,7 @@
 pub mod category;
 pub mod invite;
 pub mod pool;
+pub mod plan;
 
 mod utils {
     use std::{fmt::Debug, ops::Index};

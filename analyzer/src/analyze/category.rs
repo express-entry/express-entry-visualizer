@@ -1,5 +1,5 @@
 use super::calc::{CategoryPool, ScorePool};
-use crate::{data::{CategoryCode, Invite, Pool}, utils::console_log};
+use crate::data::{CategoryCode, Invite, Pool};
 use chrono::{Days, NaiveDate};
 use std::collections::{HashMap, HashSet};
 
@@ -124,7 +124,6 @@ impl CategoryAnalyzer {
         (labels, values, categories)
     }
 
-    
     pub fn percent_per_category(
         pool_data: &[Pool],
         invite_data: &[Invite],
@@ -177,9 +176,12 @@ impl CategoryAnalyzer {
                 if let Some(pool) = pool_to_invite {
                     let invite_as_pool = pool.invite(invite);
                     pool_to_invite = Some(pool - invite_as_pool); // remove already invited candidates from the pool to avoid duplicate counts.
-                    
-                    if invite.category.code != CategoryCode::General && invite.category.code != CategoryCode::Province {
-                        value[invite.category.code] = invite.size / pool.within_score(invite.score, 600.0).total();
+
+                    if invite.category.code != CategoryCode::General
+                        && invite.category.code != CategoryCode::Province
+                    {
+                        value[invite.category.code] =
+                            invite.size / pool.within_score(invite.score, 600.0).total();
                         categories.insert(invite.category.code);
                     }
                 }
@@ -191,8 +193,6 @@ impl CategoryAnalyzer {
 
             i = i_next;
         }
-
-        console_log!("{:?}, {:?}, {:?}", labels, values, categories);
 
         (labels, values, categories)
     }
