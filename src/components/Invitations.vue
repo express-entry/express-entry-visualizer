@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, Ref } from "vue";
-import { NCard } from "naive-ui";
+import { NCard, NGrid, NGi } from "naive-ui";
 import { Bar, Line } from "vue-chartjs";
 import zoomPlugin from "chartjs-plugin-zoom";
 import { FocusScale } from "../composables/FocusScale";
@@ -237,36 +237,38 @@ let sizeChartConfig = {
 </script>
 
 <template>
-    <n-card title="Invitation CRS Score">
-        <div>
-            <Line
-                ref="scoreChartRef"
-                @mouseover="onFocusChartRef = scoreChartRef"
-                @mouseleave="onFocusChartRef = null"
-                :options="scoreChartConfig"
-                :data="scoreChartData"
-                :style="{
-                    height: '30vh',
-                    width: '100%',
-                }"
-            />
-        </div>
-    </n-card>
-    <n-card title="Invitation Size">
-        <div>
-            <Bar
-                ref="sizeChartRef"
-                @mouseover="onFocusChartRef = sizeChartRef"
-                @mouseleave="onFocusChartRef = null"
-                :options="sizeChartConfig"
-                :data="sizeChartData"
-                :style="{
-                    height: '30vh',
-                    width: '100%',
-                }"
-            />
-        </div>
-    </n-card>
+    <n-grid cols="1">
+        <n-gi>
+            <n-card title="Invitation CRS Score">
+                <Line
+                    ref="scoreChartRef"
+                    @mouseover="onFocusChartRef = scoreChartRef"
+                    @mouseleave="onFocusChartRef = null"
+                    :options="scoreChartConfig"
+                    :data="scoreChartData"
+                    :style="{
+                        height: '30vh',
+                        width: '100%',
+                    }"
+                />
+            </n-card>
+        </n-gi>
+        <n-gi>
+            <n-card title="Invitation Size">
+                <Bar
+                    ref="sizeChartRef"
+                    @mouseover="onFocusChartRef = sizeChartRef"
+                    @mouseleave="onFocusChartRef = null"
+                    :options="sizeChartConfig"
+                    :data="sizeChartData"
+                    :style="{
+                        height: '30vh',
+                        width: '100%',
+                    }"
+                />
+            </n-card>
+        </n-gi>
+    </n-grid>
 </template>
 
 <style scoped>

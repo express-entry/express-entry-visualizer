@@ -2,7 +2,6 @@ use crate::analyze::non_pnp::PnpRemover;
 use crate::chart::dataset::{ChartData, LineDataset, Tooltip};
 use crate::chart::utils::{ToTimestamp, SERIALIZER};
 use crate::data::{Invite, Plan, Pool};
-use crate::utils::console_log;
 use chrono::{Datelike, NaiveDate};
 use itertools::Itertools;
 use serde::Serialize;
@@ -29,8 +28,6 @@ pub fn wasm_plan_size_data(
     let pool_data = unsafe { pool_data.as_ref().unwrap_throw() };
     let plan_data = unsafe { plan_data.as_ref().unwrap_throw() };
     let invite_data = PnpRemover::remove_pnp(pool_data, invite_data);
-
-    console_log!("{:?}", plan_data);
 
     let labels: Vec<_> = plan_data
         .iter()

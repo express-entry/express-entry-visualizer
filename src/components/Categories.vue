@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { Ref, ref } from "vue";
-import { NCard, NSwitch, NButton, NDropdown, NDivider } from "naive-ui";
+import {
+    NCard,
+    NSwitch,
+    NButton,
+    NDropdown,
+    NDivider,
+    NGrid,
+    NGi,
+} from "naive-ui";
 import { Line } from "vue-chartjs";
 import {
     Chart as ChartJS,
@@ -155,72 +163,74 @@ let poolChartConfig = {
 </script>
 
 <template>
-    <div>
-        <n-card title="Invitations By Categories">
-            <template #header-extra>
-                <n-switch
-                    :round="false"
-                    :value="inviteChartPNP"
-                    @update:value="
-                        (value) => {
-                            inviteChartPNP = value;
-                            updateInviteChart();
-                        }
-                    "
-                >
-                    <template #checked> PNP </template>
-                    <template #unchecked> PNP </template>
-                </n-switch>
-                <n-divider vertical />
-                <n-dropdown
-                    :options="categoryYears"
-                    @select="
+    <n-grid cols="1">
+        <n-gi>
+            <n-card title="Invitations By Categories">
+                <template #header-extra>
+                    <n-switch
+                        :round="false"
+                        :value="inviteChartPNP"
+                        @update:value="
+                            (value) => {
+                                inviteChartPNP = value;
+                                updateInviteChart();
+                            }
+                        "
+                    >
+                        <template #checked> PNP </template>
+                        <template #unchecked> PNP </template>
+                    </n-switch>
+                    <n-divider vertical />
+                    <n-dropdown
+                        :options="categoryYears"
+                        @select="
                             (key: number) => { 
                                 inviteChartYear = { label: (key == 0 ? 'all' : key.toString()), key: key }; 
                                 updateInviteChart();
                             }
                         "
-                >
-                    <n-button>{{ inviteChartYear.label }}</n-button>
-                </n-dropdown>
-            </template>
-            <Line
-                ref="inviteChartRef"
-                :options="inviteChartConfig"
-                :data="inviteChartData"
-                :style="{
-                    height: '30vh',
-                    width: '100%',
-                }"
-            />
-        </n-card>
-    </div>
-    <div>
-        <n-card title="Candidates By Categories">
-            <template #header-extra>
-                <n-dropdown
-                    :options="categoryYears"
-                    @select="
+                    >
+                        <n-button>{{ inviteChartYear.label }}</n-button>
+                    </n-dropdown>
+                </template>
+                <Line
+                    ref="inviteChartRef"
+                    :options="inviteChartConfig"
+                    :data="inviteChartData"
+                    :style="{
+                        height: '30vh',
+                        width: '100%',
+                    }"
+                />
+            </n-card>
+        </n-gi>
+        <n-gi>
+            <n-card title="Candidates By Categories">
+                <template #header-extra>
+                    <n-dropdown
+                        :options="categoryYears"
+                        @select="
                             (key: number) => { 
                                 poolChartYear = { label: (key == 0 ? 'all' : key.toString()), key: key }; 
                                 updatePoolChart();
                             }
                         "
-                >
-                    <n-button>{{ poolChartYear.label }}</n-button>
-                </n-dropdown>
-            </template>
-            <Line
-                ref="poolChartRef"
-                :options="poolChartConfig"
-                :data="poolChartData"
-                :style="{
-                    height: '30vh',
-                    width: '100%',
-                }"
-            />
-        </n-card>
-    </div>
+                    >
+                        <n-button>{{ poolChartYear.label }}</n-button>
+                    </n-dropdown>
+                </template>
+                <Line
+                    ref="poolChartRef"
+                    :options="poolChartConfig"
+                    :data="poolChartData"
+                    :style="{
+                        height: '30vh',
+                        width: '100%',
+                    }"
+                />
+            </n-card>
+        </n-gi>
+    </n-grid>
 </template>
 
 <style scoped>
