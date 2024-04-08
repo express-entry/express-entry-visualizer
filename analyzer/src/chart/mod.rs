@@ -1,7 +1,7 @@
 pub mod category;
 pub mod invite;
-pub mod pool;
 pub mod plan;
+pub mod pool;
 
 mod utils {
     use std::{fmt::Debug, ops::Index};
@@ -52,7 +52,7 @@ mod dataset {
 
     #[derive(Serialize, Clone, Debug)]
     pub struct ChartData<T: Serialize> {
-        pub labels: Vec<f64>,
+        pub labels: Vec<Label>,
         pub datasets: Vec<T>,
         pub tooltip: Tooltip,
     }
@@ -95,7 +95,7 @@ mod dataset {
     impl Default for LineDataset {
         fn default() -> Self {
             Self {
-                label: "unknown".into(),
+                label: "none".into(),
                 data: Default::default(),
                 background_color: "#ffffff".into(),
                 border_color: "#ffffff".into(),
@@ -124,6 +124,42 @@ mod dataset {
         }
     }
 
+    #[derive(Clone, Debug)]
+    pub enum Label {
+        String(String),
+        Number(f64),
+    }
+
+    impl Serialize for Label {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer,
+        {
+            match self {
+                Self::String(value) => serializer.serialize_str(value),
+                Self::Number(value) => serializer.serialize_f64(*value),
+            }
+        }
+    }
+
+    impl From<String> for Label {
+        fn from(value: String) -> Self {
+            Self::String(value)
+        }
+    }
+
+    impl From<&str> for Label {
+        fn from(value: &str) -> Self {
+            Self::String(value.into())
+        }
+    }
+
+    impl From<f64> for Label {
+        fn from(value: f64) -> Self {
+            Self::Number(value)
+        }
+    }
+
     #[derive(Serialize, Clone, Debug)]
     pub struct BarDataset {
         pub label: String,
@@ -133,6 +169,42 @@ mod dataset {
         #[serde(rename = "borderColor")]
         pub border_color: String,
         pub stack: String,
+    }
+
+    impl Default for BarDataset {
+        fn default() -> Self {
+            Self {
+                label: "none".into(),
+                data: Default::default(),
+                background_color: "#ffffff".into(),
+                border_color: "#ffffff".into(),
+                stack: "0".into(),
+            }
+        }
+    }
+
+    #[derive(Serialize, Clone, Debug)]
+    pub struct PieDataset {
+        pub label: String,
+        pub data: Vec<f64>,
+        #[serde(rename = "backgroundColor")]
+        pub background_color: Vec<String>,
+        #[serde(rename = "borderColor")]
+        pub border_color: Vec<String>,
+        #[serde(rename = "hoverOffset")]
+        pub hover_offset: f64,
+    }
+
+    impl Default for PieDataset {
+        fn default() -> Self {
+            Self {
+                label: "none".into(),
+                data: Default::default(),
+                background_color: Default::default(),
+                border_color: Default::default(),
+                hover_offset: 32.0,
+            }
+        }
     }
 
     #[derive(Serialize, Clone, Debug)]

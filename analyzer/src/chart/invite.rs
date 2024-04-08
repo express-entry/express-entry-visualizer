@@ -1,3 +1,4 @@
+use super::dataset::Label;
 use crate::chart::dataset::{BarDataset, ChartData, LineDataset, Tooltip};
 use crate::chart::utils::{ToTimestamp, SERIALIZER};
 use crate::data::{CategoryCode, Invite};
@@ -13,7 +14,7 @@ pub fn wasm_invite_score_data(invite_data: *const Vec<Invite>) -> JsValue {
     let invite_data = unsafe { invite_data.as_ref().unwrap_throw() };
     let labels: Vec<_> = invite_data
         .iter()
-        .map(|invitation| invitation.date.to_timestamp() as f64)
+        .map(|invitation| Label::from(invitation.date.to_timestamp() as f64))
         .collect();
     let datasets: Vec<_> = CategoryCode::values()
         .iter()
@@ -93,7 +94,7 @@ pub fn wasm_invite_size_data(invite_data: *const Vec<Invite>, mode: String) -> J
         .iter()
         .group_by(|invitation| fn_bar_date(invitation.date))
         .into_iter()
-        .map(|(bar_date, _)| bar_date.to_timestamp() as f64)
+        .map(|(bar_date, _)| Label::from(bar_date.to_timestamp() as f64))
         .collect();
     let datasets: Vec<_> = CategoryCode::values()
         .iter()

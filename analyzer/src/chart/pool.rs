@@ -1,4 +1,4 @@
-use super::dataset::PointStyle;
+use super::dataset::{Label, PointStyle};
 use super::utils::Stacker;
 use crate::analyze::rate::RateAnalyzer;
 use crate::analyze::smooth::Smoother;
@@ -21,7 +21,7 @@ pub fn wasm_pool_count_data(pool_data: *const Vec<Pool>) -> JsValue {
     let pool_data = unsafe { pool_data.as_ref().unwrap_throw() };
     let labels: Vec<_> = pool_data
         .iter()
-        .map(|pool| pool.date.to_timestamp() as f64)
+        .map(|pool| Label::from(pool.date.to_timestamp() as f64))
         .collect();
     let datasets: Vec<_> = (0..Pool::N)
         .rev()
@@ -108,7 +108,7 @@ pub fn wasm_pool_rate_data(
         rate_labels
             .iter()
             .chain([&extra_label])
-            .map(|date| date.to_timestamp() as f64)
+            .map(|date| Label::from(date.to_timestamp() as f64))
             .collect()
     };
     let actual = (0..Pool::N).into_iter().rev().map(|i| {
@@ -138,7 +138,6 @@ pub fn wasm_pool_rate_data(
             .collect();
 
         LineDataset {
-            label: "none".into(),
             data,
             background_color: Pool::as_color(i),
             border_color: Pool::as_color(i),
@@ -157,7 +156,13 @@ pub fn wasm_pool_rate_data(
             title: Vec::new(),
             label: (0..Pool::N)
                 .rev()
-                .map(|i| vec![format!("{}: {:.3} per day", Pool::as_str(i), projected_rate[i])])
+                .map(|i| {
+                    vec![format!(
+                        "{}: {:.3} per day",
+                        Pool::as_str(i),
+                        projected_rate[i]
+                    )]
+                })
                 .collect(),
         },
     }

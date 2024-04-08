@@ -1,4 +1,4 @@
-use super::dataset::{Dropdown, PointStyle};
+use super::dataset::{Dropdown, Label, PointStyle};
 use super::utils::Stacker;
 use crate::analyze::category::CategoryAnalyzer;
 use crate::chart::dataset::{ChartData, LineDataset, Tooltip};
@@ -49,7 +49,7 @@ pub fn wasm_category_invite_data(
 
     let labels: Vec<_> = category_invite_labels
         .iter()
-        .map(|date| date.to_timestamp() as f64)
+        .map(|date| Label::from(date.to_timestamp() as f64))
         .collect();
 
     let datasets = categories
@@ -125,7 +125,7 @@ pub fn wasm_category_pool_data(
 
     let labels: Vec<_> = category_invite_labels
         .iter()
-        .map(|date| date.to_timestamp() as f64)
+        .map(|date| Label::from(date.to_timestamp() as f64))
         .collect();
 
     let datasets = categories
