@@ -97,7 +97,7 @@ pub fn wasm_pool_rate_data(
     let invite_data = unsafe { invite_data.as_ref().unwrap_throw() };
 
     let (rate_labels, mut rate_data) = RateAnalyzer::pool_increase_rate(pool_data, invite_data);
-    let projected_rate = RateAnalyzer::projected_rate(&rate_data);
+    let projected_rate = RateAnalyzer::projected_rate(&rate_labels, &rate_data);
     Smoother::exponential(&rate_labels, &mut rate_data, 0.03278688524);
 
     let labels: Vec<_> = {

@@ -182,15 +182,19 @@ impl RateAnalyzer {
         (labels, rates)
     }
 
-    pub fn projected_rate(rate_data: &Vec<ScorePool>) -> ScorePool {
-        const PAST_DAYS: usize = 181;
-        rate_data
-            .iter()
-            .copied()
-            .rev()
-            .take(PAST_DAYS)
-            .reduce(|x, y| x + y)
-            .unwrap_or(ScorePool::zero())
-            / PAST_DAYS as f64
+    pub fn projected_rate(rate_label: &[NaiveDate], rate_data: &[ScorePool]) -> ScorePool {
+        const PAST_DAYS: i64 = 365;
+        if let Some(last_date) = rate_label.last() {
+            rate_data
+                .iter()
+                .zip(rate_label)
+                .filter(|(_, date)| (*last_date - **date).num_days() < PAST_DAYS)
+                .map(|x| (*x.0, 1.0))
+                .reduce(|(x, n), (y, m)| (x + y, m + n))
+                .map(|(x, n)| x / n)
+                .unwrap_or(ScorePool::zero())
+        } else {
+            ScorePool::default()
+        }
     }
 }
