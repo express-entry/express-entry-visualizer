@@ -14,6 +14,25 @@ impl CategoryPool {
     pub fn total(&self) -> f64 {
         self.0.iter().sum()
     }
+
+    pub fn non_pnp(mut self) -> Self {
+        self[CategoryCode::Province] = 0.0;
+        self
+    }
+
+    pub fn min(mut self, other: Self) -> Self {
+        for i in 0..Self::N {
+            self[i] = f64::min(self[i], other[i])
+        }
+        self
+    }
+
+    pub fn max(mut self, other: Self) -> Self {
+        for i in 0..Self::N {
+            self[i] = f64::max(self[i], other[i])
+        }
+        self
+    }
 }
 
 impl Default for CategoryPool {
@@ -39,6 +58,12 @@ impl Index<usize> for CategoryPool {
     type Output = f64;
     fn index(&self, i: usize) -> &Self::Output {
         &self.0[i]
+    }
+}
+
+impl IndexMut<usize> for CategoryPool {
+    fn index_mut(&mut self, i: usize) -> &mut Self::Output {
+        &mut self.0[i]
     }
 }
 

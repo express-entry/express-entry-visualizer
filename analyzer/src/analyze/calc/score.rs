@@ -22,6 +22,20 @@ impl ScorePool {
     pub fn max_score(i: usize) -> i64 {
         data::Pool::max_score(i)
     }
+
+    pub fn min(mut self, other: Self) -> Self {
+        for i in 0..Self::N {
+            self[i] = f64::min(self[i], other[i])
+        }
+        self
+    }
+
+    pub fn max(mut self, other: Self) -> Self {
+        for i in 0..Self::N {
+            self[i] = f64::max(self[i], other[i])
+        }
+        self
+    }
 }
 
 impl Default for ScorePool {
@@ -178,6 +192,18 @@ impl ScorePool {
         }
 
         self
+    }
+
+    pub fn score_of_invite(self, mut count: f64) -> f64 {
+        for i in (0..Self::N).rev() {
+            if count > self[i] {
+                count -= self[i]
+            } else {
+                let score_range = ScorePool::max_score(i) - ScorePool::min_score(i);
+                return score_range as f64 * (1.0 - count / self[i]) + ScorePool::min_score(i) as f64;
+            }
+        }
+        return 0.0;
     }
 
     pub fn within_score(self, min_score: f64, max_score: f64) -> Self {

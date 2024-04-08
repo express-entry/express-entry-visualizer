@@ -2,7 +2,7 @@ use std::{cmp::Ordering, collections::BinaryHeap};
 
 use chrono::{Days, NaiveDate};
 
-use super::calc::ScorePool;
+use super::{calc::ScorePool, LOOKBEHIND_DAYS};
 use crate::data::{Invite, Pool};
 
 #[derive(Debug, Clone, Copy)]
@@ -183,12 +183,11 @@ impl RateAnalyzer {
     }
 
     pub fn projected_rate(rate_label: &[NaiveDate], rate_data: &[ScorePool]) -> ScorePool {
-        const PAST_DAYS: i64 = 365;
         if let Some(last_date) = rate_label.last() {
             rate_data
                 .iter()
                 .zip(rate_label)
-                .filter(|(_, date)| (*last_date - **date).num_days() < PAST_DAYS)
+                .filter(|(_, date)| (*last_date - **date).num_days() < LOOKBEHIND_DAYS)
                 .map(|x| (*x.0, 1.0))
                 .reduce(|(x, n), (y, m)| (x + y, m + n))
                 .map(|(x, n)| x / n)

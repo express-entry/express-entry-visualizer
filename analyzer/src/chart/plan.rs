@@ -1,14 +1,18 @@
+use super::category;
+use super::dataset::{Label, PieDataset, PointStyle};
+use crate::analyze::calc::CategoryPool;
+use crate::analyze::category::CategoryAnalyzer;
 use crate::analyze::non_pnp::PnpRemover;
+use crate::analyze::predict::Predictor;
+use crate::analyze::rate::RateAnalyzer;
 use crate::chart::dataset::{ChartData, LineDataset, Tooltip};
 use crate::chart::utils::{ToTimestamp, SERIALIZER};
-use crate::data::{Invite, Plan, Pool};
+use crate::data::{CategoryCode, Invite, Plan, Pool};
 use chrono::{Datelike, NaiveDate};
 use itertools::Itertools;
 use serde::Serialize;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use wasm_bindgen::prelude::*;
-
-use super::dataset::{Label, PieDataset};
 
 trait FromYear {
     fn y(year: i32) -> Self;
@@ -190,6 +194,58 @@ pub fn wasm_plan_pie_data(
         tooltip: Tooltip {
             title: Default::default(),
             label: vec![vec![label_used, label_unused]],
+        },
+    }
+    .serialize(&SERIALIZER)
+    .unwrap_throw()
+}
+
+#[wasm_bindgen]
+pub fn wasm_predict_data(
+    pool_data: *const Vec<Pool>,
+    invite_data: *const Vec<Invite>,
+    plan_data: *const Vec<Plan>,
+) -> JsValue {
+    let invite_data = unsafe { invite_data.as_ref().unwrap_throw() };
+    let pool_data = unsafe { pool_data.as_ref().unwrap_throw() };
+    let plan_data = unsafe { plan_data.as_ref().unwrap_throw() };
+
+    let (pred_labels, pred_values, categories) =
+        Predictor::predict(pool_data, invite_data, plan_data);
+
+    let labels: Vec<_> = pred_labels
+        .iter()
+        .map(|date| Label::from(date.to_timestamp() as f64))
+        .collect();
+    let datasets: Vec<_> = categories
+        .iter()
+        .map(|category| {
+            let data: Vec<_> = pred_values
+                .iter()
+                .map(|pool| Some(pool[*category].round()))
+                .collect();
+
+            LineDataset {
+                label: category.as_str(),
+                data,
+                background_color: category.as_color(),
+                border_color: category.as_color(),
+                border_dash: [5.0, 5.0],
+                ..Default::default()
+            }
+        })
+        .collect();
+    let tooltip_title: Vec<_> = pred_labels
+        .iter()
+        .map(|date| format!("{}", date.format("%Y-%m-%d")))
+        .collect();
+
+    ChartData {
+        labels,
+        datasets,
+        tooltip: Tooltip {
+            title: vec![tooltip_title],
+            label: Vec::new(),
         },
     }
     .serialize(&SERIALIZER)

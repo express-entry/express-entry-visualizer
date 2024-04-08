@@ -25,7 +25,8 @@ import wasm_init, {
     wasm_invite_data,
     wasm_plan_data,
     wasm_plan_size_data,
-    wasm_plan_pie_data
+    wasm_plan_pie_data,
+    wasm_predict_data
 } from "analyzer";
 
 ChartJS.register(
@@ -55,6 +56,7 @@ let currentYear = new Date().getFullYear()
 /*** ====== Chart Data Definition ====== ***/
 let sizeChartData = wasm_plan_size_data(poolData, inviteData, planData);
 let pieChartData = wasm_plan_pie_data(poolData, inviteData, planData, currentYear)
+let predChartData = wasm_predict_data(poolData, inviteData, planData);
 
 /*** ====== Chart Config Definition ====== ***/
 const callback_tooltip_title_sizeChart = function (
@@ -110,7 +112,32 @@ let pieChartConfig = {
     },
 } as ChartOptions<"doughnut">;
 
-// ignore PNP because it is in a separate plan
+const callback_tooltip_title_predChart = function (
+    items: TooltipItem<"line">[]
+) {
+    return items.map((x) => predChartData.tooltip.title[0][x.dataIndex]);
+};
+let predChartConfig = {
+    maintainAspectRatio: false,
+    scales: {
+        x: {
+            type: "time",
+        },
+        y: {
+            type: "linear",
+        },
+    },
+    plugins: {
+        legend: {
+            position: "right",
+        },
+        tooltip: {
+            callbacks: {
+                title: callback_tooltip_title_predChart,
+            },
+        },
+    },
+} as ChartOptions<"line">;
 
 </script>
 
@@ -135,6 +162,19 @@ let pieChartConfig = {
                     ref="pieChart"
                     :options="pieChartConfig"
                     :data="pieChartData"
+                    :style="{
+                        height: '30vh',
+                        width: '100%',
+                    }"
+                />
+            </n-card>
+        </n-gi>
+        <n-gi span="3">
+            <n-card title="Invitation Score Prediction">
+                <Line
+                    ref="predChart"
+                    :options="predChartConfig"
+                    :data="predChartData"
                     :style="{
                         height: '30vh',
                         width: '100%',
