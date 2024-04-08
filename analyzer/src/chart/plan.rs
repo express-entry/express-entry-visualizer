@@ -8,7 +8,7 @@ use serde::Serialize;
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 
-use super::dataset::{BarDataset, Label, PieDataset};
+use super::dataset::{Label, PieDataset};
 
 trait FromYear {
     fn y(year: i32) -> Self;

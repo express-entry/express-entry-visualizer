@@ -133,6 +133,7 @@ impl ScorePool {
         multiplier
     }
 
+    // TODO: fit normal distribution
     fn multiplier_within_score(&self, min_score: f64, max_score: f64) -> Self {
         let mut multiplier = Self::default();
 
